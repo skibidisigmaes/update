@@ -1,0 +1,216 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+	Name = "Everything Hub",
+	LoadingTitle = "Made for fun only",
+	LoadingSubtitle = "by still",
+	ConfigurationSaving = {
+		Enabled = true,
+		FolderName = nil, -- Create a custom folder for your hub/game
+		FileName = "Everything Hub"
+	},
+	Discord = {
+		Enabled = false,
+		Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD
+		RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+	},
+	KeySystem = True, -- Set this to true to use our key system
+	KeySettings = {
+		Title = "Everything key",
+		Subtitle = "Key System",
+		Note = "Owner only",
+		FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+		SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+		GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+		Key = {"umarkuat"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+	}
+}) 
+
+local MainTab = Window:CreateTab("💫Main💫", nil) -- Title, Image
+local MainSection = MainTab:CreateSection("Nothing.")
+
+Rayfield:Notify({
+	Title = "Follow my tiktok!",
+	Content = "Very good hub",
+	Duration = 6.5,
+	Image = nil,
+	Actions = { -- Notification Buttons
+		Ignore = {
+			Name = "Okay!", "No."
+			Callback = function()
+				print("The user tapped Okay!")
+			end
+		},
+	},
+})
+
+local Button = Tab:CreateButton({
+	Name = "Kill Everyone",
+	Callback = function()
+		local Button = script.Parent
+		local player = game.Players.LocalPlayer
+
+		local function onButtonClick()
+
+			for _, otherPlayer in pairs(game.Players:GetPlayers()) do 
+				if otherPlayer ~= player then
+					if otherPlayer.Character and otherPlayer.Character:FindFirstChild("Humanoid") then
+						otherPlayer.Character.Humanoid.Health = 0 -- Set health to 0
+					end
+				end
+			end
+		end
+
+		Button.MouseButton1Click:Connect(onButtonClick)
+
+	end,
+})
+
+local Button = MainTab:CreateButton({
+	Name = "Infinite jump",
+	Callback = function()
+		local player = game.Players.LocalPlayer
+		local userInputService = game:GetService("UserInputService")
+
+		local function onJumpRequest()
+			if player.Character and player.Character:FindFirstChild("Humanoid") then
+				player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+			end
+		end
+
+		userInputService.JumpRequest:Connect(onJumpRequest)
+
+	end,
+})
+
+local Button = MainTab:CreateButton({
+	Name = "Button Example",
+	Callback = function()
+		local Players = game:GetService("Players")
+
+		local function setSlowWalkSpeed(player)
+			if player.Character and player.Character:FindFirstChild("Humanoid") then
+				player.Character.Humanoid.WalkSpeed = 5
+			end
+		end
+
+		local function onPlayerAdded(player)
+			player.CharacterAdded:Connect(function(character)
+				character:WaitForChild("Humanoid").WalkSpeed = 16
+				for _, otherPlayer in pairs(Players:GetPlayers()) do
+					if otherPlayer ~= player then
+						setSlowWalkSpeed(otherPlayer)
+					end
+				end
+			end)
+		end
+
+		for _, player in pairs(Players:GetPlayers()) do
+			onPlayerAdded(player)
+		end
+
+		Players.PlayerAdded:Connect(onPlayerAdded)
+
+	end,
+})
+
+local Slider = MainTab:CreateSlider({
+	Name = "Walkspeed slider",
+	Range = {0, 300},
+	Increment = 1,
+	Suffix = "Speed",
+	CurrentValue = 16,
+	Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+		game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = (Value)
+	end,
+})
+
+local Input = MainTab:CreateInput({
+	Name = "Jump Power",
+	PlaceholderText = "1-200",
+	RemoveTextAfterFocusLost = false,
+	Callback = function(Text)
+		game.Players.LocalPlayer.Character.Humanoid.JumpPower = (Text)
+	end,
+})
+
+local Button = MainTab:CreateButton({
+	Name = "Set Health to 10000",
+	Callback = function()
+		local player = game.Players.LocalPlayer
+		local character = player.Character or player.CharacterAdded:Wait()
+		local humanoid = character:WaitForChild("Humanoid")
+
+		humanoid.MaxHealth = 10000
+		humanoid.Health = 10000
+
+	end,
+})
+
+local Button = MainTab:CreateButton({
+	Name = "Button Example",
+	Callback = function()
+		game.Players.PlayerAdded:Connect(function(player)
+			player.CharacterAdded:Connect(function(character)
+				local humanoid = character:WaitForChild("Humanoid")
+
+				humanoid.MaxHealth = 1
+				humanoid.Health = 1
+			end)
+		end)
+
+	end,
+})
+
+local Button = Tab:CreateButton({
+	Name = "Button Example",
+	Callback = function()
+		local ESP_ENABLED = true
+
+		local function createESP(player)
+			local highlight = Instance.new("Highlight")
+			highlight.Adornee = player.Character
+			highlight.FillColor = Color3.fromRGB(255, 0, 0)
+			highlight.FillTransparency = 0.5
+			highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+			highlight.OutlineTransparency = 0
+			highlight.Parent = player.Character
+		end
+
+		local function removeESP(player)
+			local character = player.Character
+			if character then
+				local highlight = character:FindFirstChildOfClass("Highlight")
+				if highlight then
+					highlight:Destroy()
+				end
+			end
+		end
+
+		local function isAdmin(player)
+			return player.UserId == 1558205698
+		end
+
+		game.Players.PlayerAdded:Connect(function(player)
+			player.CharacterAdded:Connect(function(character)
+				if ESP_ENABLED and isAdmin(player) then
+					createESP(player)
+				end
+			end)
+
+			player.CharacterRemoving:Connect(function(character)
+				removeESP(player)
+			end)
+		end)
+
+		for _, player in pairs(game.Players:GetPlayers()) do
+			if ESP_ENABLED and isAdmin(player) then
+				if player.Character then
+					createESP(player)
+				end
+			end
+		end
+
+	end,
+})
